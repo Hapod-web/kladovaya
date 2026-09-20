@@ -1,0 +1,13 @@
+{
+  "name": "Кладовая",
+  "short_name": "Кладовая",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#D5E3DA",
+  "theme_color": "#D5E3DA",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#D5E3DA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16201B" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Кладовая">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Кладовая</title>
+<style>
+:root{
+  --bg:#D5E3DA; --paper:#F4F8F5; --ink:#1C2421; --mute:#4F6057;
+  --line:#A5BCAE; --edge:#84A08F; --tag:#FFD21F; --tagink:#1C2421; --focus:#0B5FD8;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#16201B; --paper:#1F2C26; --ink:#EAF1EC; --mute:#9FB3A7;
+    --line:#31453A; --edge:#4B6658; --tag:#FFD21F; --tagink:#16201B; --focus:#8DB8FF;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:17px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+a{color:inherit}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+.top{
+  position:sticky; top:0; z-index:5; background:var(--bg);
+  padding:calc(env(safe-area-inset-top) + .6rem) 1rem .75rem;
+  border-bottom:3px solid var(--edge);
+}
+.wrap{max-width:40rem; margin:0 auto}
+.bar{display:flex; align-items:baseline; justify-content:space-between; gap:1rem; min-height:2.75rem}
+.brand{font-size:1.4rem; font-weight:800; letter-spacing:-.01em}
+.upd{font-size:.8rem; color:var(--mute)}
+.back{
+  display:inline-flex; align-items:center; gap:.3rem; min-height:2.75rem;
+  margin-left:-.3rem; padding:0 .6rem 0 .2rem;
+  font-weight:700; font-size:1.05rem; text-decoration:none;
+}
+.back svg{width:1.4rem; height:1.4rem}
+.sw{position:relative; margin-top:.45rem}
+#q{
+  width:100%; font:inherit; font-size:1.05rem; padding:.8rem 2.9rem .8rem .9rem;
+  border:2px solid var(--ink); border-radius:4px; background:var(--paper); color:var(--ink);
+  -webkit-appearance:none; appearance:none;
+}
+#q::placeholder{color:var(--mute); opacity:1}
+#q::-webkit-search-cancel-button{display:none}
+#clr{
+  position:absolute; right:.15rem; top:50%; transform:translateY(-50%);
+  width:2.7rem; height:2.7rem; border:0; background:none; color:var(--mute);
+  font-size:1.7rem; line-height:1; display:none; cursor:pointer;
+}
+body[data-view=box] .sw, body[data-view=box] .brand, body[data-view=box] .upd{display:none}
+body[data-view=catalog] .back{display:none}
+
+main{max-width:40rem; margin:0 auto; padding:.4rem 1rem calc(3rem + env(safe-area-inset-bottom))}
+
+.sec{font-size:1rem; font-weight:700; margin:1.4rem 0 .1rem}
+.sec-hint{margin:0; font-size:.86rem; color:var(--mute)}
+.shelf{height:6px; background:var(--edge); border-radius:1px; box-shadow:0 2px 0 var(--line); margin:1.7rem 0 0}
+
+.row{
+  display:flex; align-items:center; gap:.85rem; min-height:3.6rem;
+  padding:.8rem .2rem; border-bottom:1px solid var(--line);
+  color:inherit; text-decoration:none;
+}
+.row:active{background:var(--paper)}
+.tag{
+  flex:none; min-width:2.9rem; padding:.5rem .55rem; text-align:center;
+  background:var(--tag); color:var(--tagink); border-radius:4px;
+  font-weight:800; font-size:1.15rem; line-height:1;
+}
+.rt{flex:1; min-width:0; display:flex; flex-direction:column; gap:.1rem}
+.rtitle{font-weight:650; overflow-wrap:anywhere}
+.rplace{font-size:.86rem; color:var(--mute)}
+.rr{flex:none; max-width:35%; text-align:right; font-size:.9rem; color:var(--mute)}
+.rr.qty{font-weight:800; font-size:1rem; color:var(--ink)}
+
+.empty{margin:1.6rem 0; color:var(--mute)}
+
+.bigtag{
+  position:relative; display:inline-block; margin-top:1.1rem;
+  padding:.24em .55em; background:var(--tag); color:var(--tagink); border-radius:6px;
+  font-weight:900; font-size:clamp(3rem,17vw,5rem); line-height:1; overflow-wrap:anywhere;
+}
+.bigtag::before,.bigtag::after{
+  content:""; position:absolute; top:50%; width:.14em; height:.14em;
+  border-radius:50%; background:var(--bg); transform:translateY(-50%);
+}
+.bigtag::before{left:.16em}
+.bigtag::after{right:.16em}
+h1{font-size:1.7rem; line-height:1.15; font-weight:800; margin:1rem 0 .3rem}
+.place{margin:0; color:var(--mute)}
+.near{
+  display:inline-block; margin:.8rem 0 0; padding:.25rem .65rem; border-radius:99px;
+  background:var(--ink); color:var(--bg); font-size:.88rem; font-weight:700;
+}
+.items{list-style:none; margin:1.3rem 0 0; padding:0}
+.items li{display:flex; align-items:baseline; gap:.4rem; padding:.7rem 0}
+.iname{font-size:1.1rem; overflow-wrap:anywhere}
+.iname small{display:block; font-size:.85rem; color:var(--mute)}
+.lead{flex:1; min-width:.8rem; border-bottom:2px dotted var(--edge)}
+.iqty{font-weight:800; font-size:1.1rem; white-space:nowrap}
+.boxnote{margin:1.2rem 0 0; color:var(--mute)}
+
+.hint{margin:1.8rem 0 0; padding:.9rem 1rem; background:var(--paper); border-left:6px solid var(--tag); font-size:.92rem}
+.hint p{margin:0}
+.hint button{
+  margin-top:.6rem; font:inherit; font-weight:700; padding:.55rem .95rem;
+  border:2px solid var(--ink); background:none; color:var(--ink); border-radius:4px; cursor:pointer;
+}
+</style>
+</head>
+<body data-view="catalog">
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <a class="back" href="#/" aria-label="Назад в каталог">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        Каталог
+      </a>
+      <div class="brand">Кладовая</div>
+      <div class="upd" id="upd"></div>
+    </div>
+    <div class="sw">
+      <input id="q" type="search" placeholder="Найти: саморез 9×16" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Поиск по кладовой">
+      <button id="clr" type="button" aria-label="Очистить поиск">×</button>
+    </div>
+  </div>
+</header>
+<main id="view"></main>
+<noscript><main><p>Для работы каталога нужен включённый JavaScript.</p></main></noscript>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  'use strict';
+  var D = window.KLADOVAYA || { boxes: [] };
+  var boxes = (D.boxes || []).slice().sort(function (a, b) {
+    return String(a.code).localeCompare(String(b.code), 'ru', { numeric: true });
+  });
+  var view = document.getElementById('view');
+  var input = document.getElementById('q');
+  var clr = document.getElementById('clr');
+  var query = '';
+
+  // Приводим текст к одному виду: латинские двойники букв, x/х/×, ё
+  var LOOK = { a:'а', b:'в', c:'с', e:'е', h:'н', k:'к', m:'м', o:'о', p:'р', t:'т', x:'х', y:'у', '×':'х', '*':'х', 'ё':'е' };
+  function norm(s) {
+    return String(s == null ? '' : s).toLowerCase()
+      .replace(/[abcehkmoptxy×*ё]/g, function (ch) { return LOOK[ch]; })
+      .replace(/\s+/g, ' ').trim();
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function plural(n) {
+    var m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return 'позиция';
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 'позиции';
+    return 'позиций';
+  }
+  function href(b) { return '#/b/' + encodeURIComponent(b.code); }
+  function findBox(code) {
+    var c = norm(code);
+    for (var i = 0; i < boxes.length; i++) if (norm(boxes[i].code) === c) return boxes[i];
+    return null;
+  }
+
+  function rowBox(b) {
+    var n = (b.items || []).length;
+    return '<a class="row" href="' + href(b) + '">' +
+      '<span class="tag">' + esc(b.code) + '</span>' +
+      '<span class="rt"><span class="rtitle">' + esc(b.title) + '</span>' +
+      '<span class="rplace">' + esc(b.place || '') + '</span></span>' +
+      '<span class="rr">' + n + ' ' + plural(n) + '</span></a>';
+  }
+  function rowItem(h) {
+    return '<a class="row" href="' + href(h.b) + '">' +
+      '<span class="tag">' + esc(h.b.code) + '</span>' +
+      '<span class="rt"><span class="rtitle">' + esc(h.it.n) + '</span>' +
+      '<span class="rplace">' + esc(h.b.title) + (h.b.place ? ', ' + esc(h.b.place) : '') + '</span></span>' +
+      (h.it.q ? '<span class="rr qty">' + esc(h.it.q) + '</span>' : '') + '</a>';
+  }
+
+  function search(q) {
+    var toks = norm(q).split(' ').filter(Boolean);
+    var hitBoxes = [], hitItems = [];
+    boxes.forEach(function (b) {
+      var boxHay = norm([b.code, b.title, b.place].join(' '));
+      if (toks.every(function (t) { return boxHay.indexOf(t) !== -1; })) hitBoxes.push(b);
+      (b.items || []).forEach(function (it) {
+        var hay = norm([it.n, it.note, b.code].join(' '));
+        if (toks.every(function (t) { return hay.indexOf(t) !== -1; })) hitItems.push({ b: b, it: it });
+      });
+    });
+    return { hitBoxes: hitBoxes, hitItems: hitItems };
+  }
+
+  function renderCatalog() {
+    var html = '';
+    if (norm(query)) {
+      var r = search(query);
+      if (r.hitItems.length) html += '<h2 class="sec">Вещи</h2>' + r.hitItems.map(rowItem).join('');
+      if (r.hitBoxes.length) html += '<h2 class="sec">Коробки</h2>' + r.hitBoxes.map(rowBox).join('');
+      if (!html) html = '<p class="empty">Ничего не нашлось. Попробуй короче, например «саморез» вместо «саморез 9×16».</p>';
+    } else if (!boxes.length) {
+      html = '<p class="empty">Каталог пока пустой.</p>';
+    } else {
+      var quick = boxes.filter(function (b) { return b.quick; });
+      if (quick.length) {
+        html += '<h2 class="sec">Под рукой</h2>' + quick.map(rowBox).join('') + '<div class="shelf"></div>';
+      }
+      html += '<h2 class="sec">Все коробки</h2>' +
+        '<p class="sec-hint">Всего: ' + boxes.length + '. Код на этикетке совпадает с кодом места на полке.</p>' +
+        boxes.map(rowBox).join('');
+      html += installHint();
+    }
+    view.innerHTML = html;
+    var btn = document.getElementById('hintOk');
+    if (btn) btn.onclick = function () {
+      try { localStorage.setItem('hintOk', '1'); } catch (e) {}
+      var h = document.getElementById('hint'); if (h) h.remove();
+    };
+  }
+
+  function installHint() {
+    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    var standalone = window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+    var seen = false;
+    try { seen = localStorage.getItem('hintOk') === '1'; } catch (e) {}
+    if (!ios || standalone || seen) return '';
+    return '<div class="hint" id="hint"><p>Чтобы каталог открывался без интернета: нажми «Поделиться» в Safari и выбери «На экран Домой».</p>' +
+      '<button id="hintOk" type="button">Понятно</button></div>';
+  }
+
+  function renderBox(code) {
+    var b = findBox(code);
+    if (!b) {
+      view.innerHTML = '<p class="empty">Коробки с кодом «' + esc(code) + '» в каталоге нет. Возможно, каталог ещё не обновился: открой его при включённом интернете.</p>';
+      return;
+    }
+    var items = (b.items || []).map(function (it) {
+      return '<li><span class="iname">' + esc(it.n) + (it.note ? '<small>' + esc(it.note) + '</small>' : '') + '</span>' +
+        '<span class="lead"></span><span class="iqty">' + esc(it.q || '') + '</span></li>';
+    }).join('');
+    view.innerHTML =
+      '<article><div class="bigtag">' + esc(b.code) + '</div>' +
+      '<h1>' + esc(b.title) + '</h1>' +
+      (b.place ? '<p class="place">' + esc(b.place) + '</p>' : '') +
+      (b.quick ? '<span class="near">Лежит под рукой</span>' : '') +
+      (items ? '<ul class="items">' + items + '</ul>' : '<p class="empty">В этой коробке пока пусто.</p>') +
+      (b.note ? '<p class="boxnote">' + esc(b.note) + '</p>' : '') +
+      '</article>';
+  }
+
+  function route() {
+    var h = location.hash.replace(/^#/, '');
+    try { h = decodeURIComponent(h); } catch (e) {}
+    var m = h.match(/^\/b\/(.+)$/);
+    if (m) {
+      document.body.setAttribute('data-view', 'box');
+      renderBox(m[1]);
+      window.scrollTo(0, 0);
+    } else {
+      document.body.setAttribute('data-view', 'catalog');
+      renderCatalog();
+    }
+  }
+
+  input.addEventListener('input', function () {
+    query = input.value;
+    clr.style.display = query ? 'block' : 'none';
+    renderCatalog();
+  });
+  clr.addEventListener('click', function () {
+    input.value = ''; query = ''; clr.style.display = 'none'; renderCatalog(); input.focus();
+  });
+  window.addEventListener('hashchange', route);
+
+  if (D.updated) {
+    var p = String(D.updated).split('-');
+    if (p.length === 3) document.getElementById('upd').textContent = 'обновлено ' + p[2] + '.' + p[1] + '.' + p[0];
+  }
+  route();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
