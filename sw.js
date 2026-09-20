@@ -1,12 +1,19 @@
 // Сервис-воркер: после первого открытия сайт хранится в телефоне и работает без интернета.
 // Когда интернет есть, файлы обновляются сами (сначала пробуем сеть, потом запасная копия).
-var CACHE = 'kladovaya-v1';
-var CORE = ['./', 'index.html', 'data.js', 'manifest.json', 'icon.png'];
+var CACHE = 'kladovaya-v2';
+var CORE = ['./', 'index.html', 'data.js', 'manifest.json', 'IMG_3441.png'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE)
-      .then(function (c) { return c.addAll(CORE); })
+      .then(function (c) {
+        // каждый файл отдельно: если какого-то нет, остальные всё равно сохранятся
+        return Promise.all(CORE.map(function (u) {
+          return fetch(u, { cache: 'reload' }).then(function (r) {
+            if (r.ok) return c.put(u, r);
+          }).catch(function () {});
+        }));
+      })
       .then(function () { return self.skipWaiting(); })
   );
 });
